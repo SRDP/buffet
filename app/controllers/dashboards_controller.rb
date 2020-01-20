@@ -4,8 +4,29 @@ class DashboardsController < ApplicationController
   # GET /dashboards
   # GET /dashboards.json
   def index
-    @dashboards = Dashboard.all
-    @select = @dashboards.last.attributes.keys - ["id","created_at","updated_at"]
+
+    if(params['search'] != "1")
+      @dashboards = Dashboard.all
+      @select = @dashboards.last.attributes.keys - ["id","created_at","updated_at"]
+      @group_inv = @dashboards.last.attributes.keys - ["id","created_at","updated_at"]
+    else
+
+      hostname = params['hostname'] if !params['hostname'].blank?
+      ipaddress = params['ipaddress'] if !params['ipaddress'].blank?
+      stat = params['stat'].split(',') if !params['stat'].blank?
+      query = ""
+      query_data = ""
+      query = query + 'hostname ILIKE ?' if !hostname.blank?
+      query = query +  'and ipaddress LIKE ?' if !ipaddress.blank? && !query.blank?
+      query = query + 'ipaddress LIKE ?' if !ipaddress.blank? && query.blank?
+
+
+      @dashboards =   Dashboard.where("hostname ILIKE ?","%#{hostname}%") if !hostname.blank? && ipaddress.blank?
+      @dashboards =   Dashboard.where("ipaddress LIKE ?","%#{ipaddress}%") if hostname.blank? && ipaddress.blank?
+      @dashboards =   Dashboard.where("hostname ILIKE ? and ipaddress LIKE ? ","%#{hostname}%","%#{ipaddress}%") if !hostname.blank? && !ipaddress.blank?
+
+
+    end
   end
 
   # GET /dashboards/1
@@ -70,6 +91,6 @@ class DashboardsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def dashboard_params
-      params.fetch(:dashboard, {})
+        params.require(:dashboard).permit("hostname", "kernel_version", "ipaddress", "macaddress", "cpuidle", "total_memory", "used_memory", "free_memory", "total_swap", "used_swap", "free_swap", "userslist", "disk_free_space", "disk_Used_space","stat","search")
     end
 end

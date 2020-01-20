@@ -12,44 +12,35 @@
       <div class="navbar-header">
         <a class="navbar-brand" href="#">Buffet</a>
       </div>
-      <!-- <ul class="nav navbar-nav">
-        <li class="active"><a href="#">Home</a></li>
-        <li><a href="#">Page 1</a></li>
-        <li><a href="#">Page 2</a></li>
-        <li><a href="#">Page 3</a></li>
-      </ul>
-    </div> -->
   </nav>
   <div id="container">
     <div id="body">
      <div class="container">
        <div class="form-group" style="margin-top: 3%;">
          <div class="row">
-           <div class="col-md-3">
+           <div  class="col-md-3">
 
-             <input type="text" name=""><br>
+             <input type="text" id="hostname" name="" placeholder= "Hostname"class='col-md-9'><br>
 
             </div>
-             <div class="col-md-3">
-                 <select id="dates-field2" class="multiselect-ui form-control" multiple="multiple">
-                    <%@select.each do |dsv| %>
-                     <option value=dsv><%= dsv.camelcase %></option>
-                     <%end%>
-                 </select>
+            <div class="col-md-3">
 
-              </div>
+              <input id="ipaddress" type="text" placeholder= "Ip address" name= "" class='col-md-9'><br>
+
+             </div>
+
+
               <div class="col-md-3">
                   <select id="dates-field2" class="multiselect-ui form-control" multiple="multiple">
                      <%@select.each do |dsv| %>
-                      <option value=dsv><%= dsv.camelcase %></option>
+                      <option value=<%=dsv%>><%= dsv.camelcase %></option>
                       <%end%>
                   </select>
-
 
                </div>
 
              <div class="col-md-3">
-               <button type="button"class="btn btn-primary" style="background-color:#c00;border-color:#c00;border-radius: 0;">Search</button>
+               <button type="button" id="search" class="btn btn-primary" style="background-color:#c00;border-color:#c00;border-radius: 0;">Search</button>
              </div>
 
          </div>
@@ -61,31 +52,43 @@
              <thead>
                <tr>
                  <th>Hostname</th>
-                 <th>Kernelversion</th>
-                 <th>Email</th>
+                 <th>Ip Address</th>
+                  <th>KernelVersion</th>
+                  <th>Macaddress</th>
+                  <th>Cpuidle</th>
+                  <th>TotalMemory</th>
+                  <th>UsedMemory</th>
+                  <th>FreeMemory</th>
+                  <!-- <th>TotalSwap</th>
+                  <th>UsedSwap</th>
+                  <th>FreeSwap</th>
+                  <th>Userslist</th> -->
+                  <th>DiskFreeSpace</th>
+                  <th>DiskUsedSpace</th>
                </tr>
              </thead>
              <tbody>
+               <% @dashboards.each do |ds| %>
                <tr>
-                 <td>John</td>
-                 <td>Doe</td>
-                 <td>john@example.com</td>
+                  <td><%= ds.hostname%></td>
+                  <td><%= ds.ipaddress%></td>
+                  <td><%= ds.kernel_version%></td>
+                  <td><%= ds.macaddress%></td>
+                  <td><%= ds.cpuidle%></td>
+                  <td><%= ds.total_memory%></td>
+                  <td><%= ds.used_memory%></td>
+                  <td><%= ds.free_memory%></td>
+                  <!-- <td><% ds.total_swap%></td>
+                  <td><%ds.used_swap%></td>
+                  <td><% ds.free_swap%></td>
+                  <td><% ds.userslist%></td> -->
+                  <td><%= ds.disk_free_space%></td>
+                  <td><%= ds.disk_Used_space%></td>
+
+
+
                </tr>
-               <tr>
-                 <td>Mary</td>
-                 <td>Moe</td>
-                 <td>mary@example.com</td>
-               </tr>
-               <tr>
-                 <td>July</td>
-                 <td>Dooley</td>
-                 <td>july@example.com</td>
-               </tr>
-               <tr>
-                 <td>one</td>
-                 <td>two</td>
-                 <td>three@example.com</td>
-               </tr>
+               <%end%>
              </tbody>
            </table>
 
@@ -93,9 +96,45 @@
        </div>
      </div>
      </div>
-     <div id="footer">Footer</div>
+     <div id="footer"></div>
   </div>
   <script type="text/javascript">
+
+    $('#search').click(function() {
+      var hostname ="";
+      var ipaddress = "";
+      var stat = []
+      var url = $(location).attr('host');
+      var params = "";
+      var lival = [];
+
+       hostname = $("#hostname").val();
+       ipaddress = $("#ipaddress").val();
+       lival= $(".active");
+
+       for(var i=0;i < lival.length;i++){
+         console.log(lival[i].children[0].children[0].children[0].value);
+         stat.push(lival[i].children[0].children[0].children[0].value);
+       }
+
+       params = "hostname=" + hostname + "&ipaddress=" + ipaddress + "&stat=" + stat + "&search=1"
+       var full_url = url +"?&"+ params
+
+      $.ajax({
+      headers:{
+         "key":"your key",
+         "Accept":"application/json",//depends on your api
+         "Content-type":"application/x-www-form-urlencoded"//depends on your api
+      },
+      url: "dashboards?"+ params,
+      success:function(response){
+
+        }
+      });
+
+
+
+    });
     $('#export').click(function() {
     var titles = [];
     var data = [];
