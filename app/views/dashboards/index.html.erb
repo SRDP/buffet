@@ -7,6 +7,7 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 </head>
 <body style="background: #EDEDED">
+
   <nav class="navbar navbar-inverse" style="border-radius: 0px; background: black;">
     <div class="container-fluid">
       <div class="navbar-header">
@@ -32,14 +33,14 @@
             </div>
             <div class="col-md-4">
               <%= text_field_tag(:ipaddress, params[:ipaddress],class:'multiselect dropdown-toggle btn-block text-left btn btn-default',style:"background: ghostwhite;", id:"ipaddress",placeholder: 'Ip address') %>
-
              </div>
                <div class="col-md-4">
                  <%=select_tag "stat", raw("#{@select_html}"), multiple: true, class: 'multiselect-ui form-control', id: 'dates-field2',style: 'width:100%'%>
                 </div>
                  <%= hidden_field_tag "search","1"%>
-             <div class="col-md-4" style="margin-top: 4%;margin-left: 34%;">
-               <%= submit_tag "Search" , :id =>  "search" ,:class => "btn btn-primary" ,:style => "background-color:#c00;border-color:#c00;border-radius: 0; width: 100%;border-radius: 5px;z-index: 10;"%>
+             <div class="col-md-4" style="margin-top: 4%;margin-left: 34%;" ">
+               <%= submit_tag "Search" , :id =>  "search1" ,:class => "btn btn-primary" ,:style => "background-color:#c00;border-color:#c00;border-radius: 0; width: 100%;border-radius: 5px;z-index: 10;display: none;"%>
+               <button type="button" class="btn btn-primary"  onclick="waitingDialog.show();setTimeout(function () {waitingDialog.hide(); $('#search1').click();}, 30000);" style="background-color:#c00;border-color:#c00;border-radius: 0; width: 100%;border-radius: 5px;z-index: 10;">Search</button>
              </div>
 
            <% end %>
@@ -259,12 +260,15 @@
      </div>
 
      </div>
+
  <div id="footer">
    <div class="footer-logo" style="color: white">
       <img src="/ansible_logo.png" alt="Anisble logo" class="" style="width: 2%; margin-left:40%;">
       Powered by Ansible Tower
    </div>
   </div>
+
+
   <script type="text/javascript">
 
 
@@ -329,6 +333,72 @@
           includeSelectAllOption: true
       });
   });
+
+
+  var waitingDialog = waitingDialog || (function ($) {
+    'use strict';
+
+	// Creating modal dialog's DOM
+	var $dialog = $(
+		'<div class="modal fade" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-hidden="true" style="padding-top:15%; overflow-y:visible;">' +
+		'<div class="modal-dialog modal-m">' +
+		'<div class="modal-content">' +
+			'<div class="modal-header"><h3 style="margin:0;"></h3></div>' +
+			'<div class="modal-body">' +
+				'<div class="progress progress-striped active" style="margin-bottom:0;"><div class="progress-bar" style="width: 100%"></div></div>' +
+			'</div>' +
+		'</div></div></div>');
+
+	return {
+		/**
+		 * Opens our dialog
+		 * @param message Custom message
+		 * @param options Custom options:
+		 * 				  options.dialogSize - bootstrap postfix for dialog size, e.g. "sm", "m";
+		 * 				  options.progressType - bootstrap postfix for progress bar type, e.g. "success", "warning".
+		 */
+		show: function (message, options) {
+			// Assigning defaults
+			if (typeof options === 'undefined') {
+				options = {};
+			}
+			if (typeof message === 'undefined') {
+				message = 'Loading';
+			}
+			var settings = $.extend({
+				dialogSize: 'm',
+				progressType: '',
+				onHide: null // This callback runs after the dialog was hidden
+			}, options);
+
+			// Configuring dialog
+			$dialog.find('.modal-dialog').attr('class', 'modal-dialog').addClass('modal-' + settings.dialogSize);
+			$dialog.find('.progress-bar').attr('class', 'progress-bar');
+			if (settings.progressType) {
+				$dialog.find('.progress-bar').addClass('progress-bar-' + settings.progressType);
+			}
+			$dialog.find('h3').text(message);
+			// Adding callbacks
+			if (typeof settings.onHide === 'function') {
+				$dialog.off('hidden.bs.modal').on('hidden.bs.modal', function (e) {
+					settings.onHide.call($dialog);
+				});
+			}
+			// Opening dialog
+			$dialog.modal();
+		},
+		/**
+		 * Closes dialog
+		 */
+		hide: function () {
+			$dialog.modal('hide');
+		}
+	};
+
+})(jQuery);
+
+
+
 </script>
 <style>
 html,
