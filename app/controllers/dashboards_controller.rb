@@ -1,5 +1,9 @@
 class DashboardsController < ApplicationController
   require "json"
+  require 'net/http'
+  require "net/https"
+  require "uri"
+  OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
   before_action :set_dashboard, only: [:show, :edit, :update, :destroy]
 
   # GET /dashboards
@@ -13,10 +17,27 @@ class DashboardsController < ApplicationController
      end
     if(params['search'] != "1")
       @dashboards = Dashboard.all
-
+       @stat = ["Hostname","Ip Address",	"KernelVersion","Macaddress",	"Cpuidle"]
     else
 
-      #url = "https://ansibledemo.ibmgtscloud.com/api/v2/jobs/139/relaunch/"
+
+      uri = URI.parse("https://ansibledemo.ibmgtscloud.com/api/v2/job_templates/9/launch/")
+
+      request = Net::HTTP::Post.new(uri)
+      request.basic_auth("admin", "admin")
+      request["Accept"] = "application/json"
+      request["Content-Type"] = "application/json"
+
+      req_options = {
+        use_ssl: uri.scheme == "https",
+        verify_mode: OpenSSL::SSL::VERIFY_NONE,
+      }
+
+      response = Net::HTTP.start(uri.hostname, uri.port, req_options) do |http|
+        http.request(request)
+      end
+      token =  JSON.parse(response.body)
+      puts token.inspect
 
       file = File.open "/app1/temp.json"
       data = JSON.load file
@@ -119,7 +140,6 @@ class DashboardsController < ApplicationController
         data_template[:password_expire_date] = password_expire_date.gsub("[u'","").gsub!("				"," ")
         data_template[:ls_output] = ls_output.gsub("[u'","")
         data_template[:ports_listening] = ports_listening.gsub("[u'","").gsub!("				","")
-          puts
          data_to_be_saved << data_template
       end
       Dashboard.destroy_all

@@ -6,51 +6,55 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 </head>
-<body>
-  <nav class="navbar navbar-inverse" style="border-radius: 0px;">
+<body style="background: #EDEDED">
+  <nav class="navbar navbar-inverse" style="border-radius: 0px; background: black;">
     <div class="container-fluid">
       <div class="navbar-header">
-        <a class="navbar-brand" href="#">Buffet</a>
+        <!-- <a class="navbar-brand" >Buffet</a> -->
+
+        <img src="/logo.png" alt="Buffet logo" class="" style="width: 40%; margin-top:4px;">
+
+      </div>
+      <div class="header-logo" style="color: white">
+         <img src="/ansible_logo.png" alt="Anisble logo" class="" style="width: 3%;margin-left: 54%;margin-top: 5px;">
       </div>
   </nav>
-  <div id="container">
+  <div id="container" >
     <div id="body">
      <div class="container">
+       <div class="widgetSection appendBottom40">
        <div class="form-group" style="margin-top: 3%;">
          <div class="row">
            <%= form_tag(dashboards_path, method: :get) do %>
 
-           <div  class="col-md-3">
+           <div  class="col-md-4">
                <%= text_field_tag(:hostname, params[:hostname],class:'multiselect dropdown-toggle btn-block text-left btn btn-default',style:"background: ghostwhite;", id:"ipaddress",placeholder: 'Hostname') %>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-4">
               <%= text_field_tag(:ipaddress, params[:ipaddress],class:'multiselect dropdown-toggle btn-block text-left btn btn-default',style:"background: ghostwhite;", id:"ipaddress",placeholder: 'Ip address') %>
 
              </div>
-
-
-
                <div class="col-md-4">
-                 <%=select_tag "stat", raw("#{@select_html}"), multiple: true, class: 'multiselect-ui form-control', id: 'dates-field2'%>
+                 <%=select_tag "stat", raw("#{@select_html}"), multiple: true, class: 'multiselect-ui form-control', id: 'dates-field2',style: 'width:100%'%>
                 </div>
                  <%= hidden_field_tag "search","1"%>
-             <div class="col-md-2">
-
-               <%= submit_tag "Search" , :id =>  "search" ,:class => "btn btn-primary" ,:style => "background-color:#c00;border-color:#c00;border-radius: 0;"%>
-
+             <div class="col-md-4" style="margin-top: 4%;margin-left: 34%;">
+               <%= submit_tag "Search" , :id =>  "search" ,:class => "btn btn-primary" ,:style => "background-color:#c00;border-color:#c00;border-radius: 0; width: 100%;border-radius: 5px;z-index: 10;"%>
              </div>
 
            <% end %>
          </div>
+       </div>
        </div>
        <div class="row" style="margin-top: 4%;">
          <div class="col-md-12">
             <% if @dashboards.nil? %>
 
             <% else %>
-              <button type="button" class="btn btn-primary"  id="export"  style="float: right;border-radius: 0;background-color:#2272f0;padding: 10px 15px;margin-bottom: 10px;">Download</button>
+              <button type="button" class="btn btn-primary"  id="export"  style="float: right;border-radius: 0;background-color:#2272f0;padding: 10px 15px;margin-bottom: 10px;border-radius: 5px;">Download</button>
             <%end%>
-           <table class="table table-striped dataTable" style="border: 1px solid #e6e6e6;">
+            <div class="tablePanel">
+           <table class="table table-striped dataTable" style="border: 1px solid #020112;border-radius: 5px;">
              <thead>
                <tr class="btn-primary" style="background-color:#2272f0;">
                  <% if !@stat.nil? %>
@@ -108,7 +112,8 @@
                  <% if @stat.include? "Hostname" %>
                   <td><%= ds.hostname.html_safe  if !ds.hostname.nil?%></td>
                  <%end%>
-                <% if @stat.include? "Ipaddress" %>
+
+                <% if @stat.include? "Ip Address" %>
                   <td><%= ds.ipaddress.html_safe  if !ds.ipaddress.nil?%></td>
                 <%end%>
                 <% if @stat.include? "KernelVersion" %>
@@ -117,6 +122,7 @@
                 <% if @stat.include? "Macaddress" %>
                   <td><%= ds.macaddress.html_safe  if !ds.macaddress.nil?%></td>
                 <%end%>
+
                 <% if @stat.include? "Cpuidle" %>
                   <td><%=  ds.cpuidle.html_safe  if !ds.cpuidle.nil?%></td>
                 <%end%>
@@ -246,12 +252,18 @@
 
              </tbody>
            </table>
+           </div>
 
          </div>
        </div>
      </div>
+
      </div>
-     <!-- <div id="footer"></div> -->
+ <div id="footer">
+   <div class="footer-logo" style="color: white">
+      <img src="/ansible_logo.png" alt="Anisble logo" class="" style="width: 2%; margin-left:40%;">
+      Powered by Ansible Tower
+   </div>
   </div>
   <script type="text/javascript">
 
@@ -325,6 +337,9 @@ body {
    padding:0;
    height:100%;
 }
+.checkbox {
+    margin: 10%;
+}
 #container {
    min-height:100%;
    position:relative;
@@ -341,9 +356,8 @@ body {
    position:absolute;
    bottom:0;
    width:100%;
-   height:60px;   /* Height of the footer */
-   background:#222;
-   color: #fff;
+   height:5%;   /* Height of the footer */
+   background: black;
 }
 footer{
   position:absolute;
@@ -418,6 +432,20 @@ span.multiselect-native-select select {
 .form-inline .multiselect-container li a label.checkbox input[type=checkbox], .form-inline .multiselect-container li a label.radio input[type=radio] {
 	margin-left: -20px;
 	margin-right: 0
+}
+.widgetSection {
+    width: 98%;
+    margin: 0 auto;
+    position: relative;
+    z-index: 10;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    border-radius: 8px;
+    -webkit-box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.1);
+    -moz-box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.1);
+    background-color: #FFFFFF;
+    padding: 50px 20px 0;
 }
 </style>
 <script type="text/javascript">
