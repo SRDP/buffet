@@ -6,7 +6,7 @@ class DashboardsController < ApplicationController
   # GET /dashboards.json
   def index
 
-    @select = Dashboard.new.attributes.keys - ["id","created_at","updated_at"]
+    @select = Dashboard.new.attributes.keys - ["id","created_at","updated_at","users_list"]
     @select_html =""
     @select.each do |dsv|
       @select_html += "<option id="+ "dates-field2" + "class=" + "multiselect-ui form-control" + "multiple=" + "multiple" +  "value=" + dsv + ">" + dsv.camelcase + "</option>"
@@ -15,6 +15,8 @@ class DashboardsController < ApplicationController
       @dashboards = Dashboard.all
 
     else
+      #url = 
+
       file = File.open "/Users/sreedeepkumar/Workspace/COE/hackthon/data/data.json"
       data = JSON.load file
       data_value_array = data.values
@@ -69,8 +71,9 @@ class DashboardsController < ApplicationController
          data_template[:disk_free_space] = d['disk_free_space']
          data_template[:disk_Used_space] = d['disk_Used_space']
          data_template[:cpucount] = d['cpucount']
+         data_template[:top_cpu_process] = d['top_cpu_process']
 
-        data_template[:current_logged_in_users] = d['current_logged_in_users']
+        data_template[:current_logged_in_users] = "<p>" + d['current_logged_in_users'].split(",")[0].gsub("u","") + "</p>"
         data_template[:users_password_expired] = d['users_password_expired']
         data_template[:password_expire_date] = d['password_expire_date']
         data_template[:ls_output] = d['ls_output']
@@ -85,35 +88,41 @@ class DashboardsController < ApplicationController
 
          d['users_list'].split(",").map {|x| ul << x.split('u').compact}
          data_template[:userslist] = ul.compact.join(",")
-         top_cpu_process = "" + "<br>"
-         top_cpu_process += d['top_cpu_process'].split(",")[0] + "<br>"
-         top_cpu_process += d['top_cpu_process'].split(",")[1] + "<br>"
-         top_cpu_process += d['top_cpu_process'].split(",")[2] + "<br>"
+         top_cpu_process = ""
+         top_cpu_process += "<p>" + d['top_cpu_process'].split(",")[0].gsub("u'","") + "</p>"
+         top_cpu_process += "<p>" +d['top_cpu_process'].split(",")[1].gsub("u'","") + "</p>"
+         top_cpu_process += "<p>"+ d['top_cpu_process'].split(",")[2].gsub("u'","") + "</p>"
+         top_cpu_process += "<p>"+ d['top_cpu_process'].split(",")[3].gsub("u'","") + "</p>"
+         top_cpu_process += "<p>"+ d['top_cpu_process'].split(",")[4].gsub("u'","") + "</p>"
+         top_cpu_process += "<p>"+ d['top_cpu_process'].split(",")[5].gsub("u'","") + "</p>"
 
-         data_template[:top_cpu_process] = top_cpu_process
+         data_template[:top_cpu_process] = top_cpu_process.gsub("[u'","")
          password_expire_date = ""
         d['password_expire_date'].split(',').each do | pxd|
-          password_expire_date += pxd  + "<br>"
+          password_expire_date += "<p>"+ pxd  + "</p>"
         end
         ls_output =""
-         d['ls_output'].split(',').each do | pxd|
-           ls_output += pxd  + "<br>"
+
+         d['ls_output'].split("u'").each do | pxd|
+           ls_output += "<p>"+ pxd  + "</p>"
         end
+
         services_status = ""
-        d['services_status'].split(',').each do | pxd|
-          services_status += pxd  + "<br>"
+        d['services_status'].split("u'").each do | pxd|
+          services_status += "<p>"+ pxd  + "</p>"
        end
        ports_listening =""
-       d['ports_listening'].split(',').each do | pxd|
-         ports_listening += pxd  + "<br>"
+       d['ports_listening'].split("u'").each do | pxd|
+         ports_listening += "<p>"+  pxd  + "</p>"
       end
-        data_template[:password_expire_date] = password_expire_date.gsub!("				"," ")
-        data_template[:ls_output] = ls_output.gsub!("				"," ")
-        data_template[:ports_listening] = ports_listening.gsub!("				","")
-        puts ports_listening.inspect
+        data_template[:password_expire_date] = password_expire_date.gsub("[u'","").gsub!("				"," ")
+        data_template[:ls_output] = ls_output.gsub("[u'","")
+        data_template[:ports_listening] = ports_listening.gsub("[u'","").gsub!("				","")
+          puts
          data_to_be_saved << data_template
       end
-Dashboard.create(data_to_be_saved)
+      Dashboard.destroy_all
+      Dashboard.create(data_to_be_saved)
 #puts data_template
 
       puts"-------------------data-----------------------------------"
