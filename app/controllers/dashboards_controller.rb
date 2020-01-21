@@ -15,9 +15,10 @@ class DashboardsController < ApplicationController
       @dashboards = Dashboard.all
 
     else
-      url = 
 
-      file = File.open "/Users/sreedeepkumar/Workspace/COE/hackthon/data/data.json"
+      #url = "https://ansibledemo.ibmgtscloud.com/api/v2/jobs/139/relaunch/"
+
+      file = File.open "/app1/temp.json"
       data = JSON.load file
       data_value_array = data.values
       data_to_be_saved = []
