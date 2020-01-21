@@ -15,7 +15,7 @@ class DashboardsController < ApplicationController
       @dashboards = Dashboard.all
 
     else
-      #url = 
+      url = 
 
       file = File.open "/Users/sreedeepkumar/Workspace/COE/hackthon/data/data.json"
       data = JSON.load file
