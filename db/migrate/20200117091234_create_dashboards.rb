@@ -15,6 +15,22 @@ class CreateDashboards < ActiveRecord::Migration[6.0]
       t.string :userslist
       t.string :disk_free_space
       t.string :disk_Used_space
+      t.string  :cpucount
+       t.string  :top_cpu_process
+       t.string  :top_memory_process
+       t.string  :current_logged_in_users
+       t.string  :users_password_expired
+       t.string  :password_expire_date
+       t.string  :users_list
+       t.string  :ls_output
+       t.string  :hosts_file
+       t.string  :services_status
+       t.string  :pvs
+       t.string  :vgs
+       t.string  :lvs
+       t.string  :disk_utilization
+       t.string  :ifconfig
+       t.string  :ports_listening
       t.timestamps
     end
   end

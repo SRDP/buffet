@@ -18,58 +18,194 @@
      <div class="container">
        <div class="form-group" style="margin-top: 3%;">
          <div class="row">
+           <%= form_tag(dashboards_path, method: :get) do %>
+
            <div  class="col-md-3">
-
-             <input type="text" id="hostname" name="" placeholder= "Hostname"class='col-md-9'><br>
-
+               <%= text_field_tag(:hostname, params[:hostname],class:'multiselect dropdown-toggle btn-block text-left btn btn-default', id:"ipaddress",placeholder: 'Hostname') %>
             </div>
             <div class="col-md-3">
-
-              <input id="ipaddress" type="text" placeholder= "Ip address" name= "" class='col-md-9'><br>
+              <%= text_field_tag(:ipaddress, params[:ipaddress],class:'multiselect dropdown-toggle btn-block text-left btn btn-default', id:"ipaddress",placeholder: 'Ip address') %>
 
              </div>
 
 
-              <div class="col-md-3">
-                  <select id="dates-field2" class="multiselect-ui form-control" multiple="multiple">
-                     <%@select.each do |dsv| %>
-                      <option value=<%=dsv%>><%= dsv.camelcase %></option>
-                      <%end%>
-                  </select>
 
-               </div>
-
+               <div class="col-md-3">
+                 <%=select_tag "stat", raw("#{@select_html}"), multiple: true, class: 'multiselect-ui form-control', id: 'dates-field2'%>
+                </div>
+                 <%= hidden_field_tag "search","1"%>
              <div class="col-md-3">
-               <button type="button" id="search" class="btn btn-primary" style="background-color:#c00;border-color:#c00;border-radius: 0;">Search</button>
+
+               <%= submit_tag "Search" , :id =>  "search" ,:class => "btn btn-primary" ,:style => "background-color:#c00;border-color:#c00;border-radius: 0;"%>
+
              </div>
 
+           <% end %>
          </div>
        </div>
        <div class="row" style="margin-top: 4%;">
          <div class="col-md-12">
-           <button type="button" class="btn btn-primary"  id="export"  style="float: right;border-radius: 0;background-color:#2272f0;padding: 10px 15px;margin-bottom: 10px;">Download</button>
+            <% if @dashboards.nil? %>
+
+            <% else %>
+              <button type="button" class="btn btn-primary"  id="export"  style="float: right;border-radius: 0;background-color:#2272f0;padding: 10px 15px;margin-bottom: 10px;">Download</button>
+            <%end%>
            <table class="table table-striped dataTable" style="border: 1px solid #e6e6e6;">
              <thead>
                <tr>
-                 <th>Hostname</th>
-                 <th>Ip Address</th>
-                  <th>KernelVersion</th>
-                  <th>Macaddress</th>
-                  <th>Cpuidle</th>
-                  <th>TotalMemory</th>
-                  <th>UsedMemory</th>
-                  <th>FreeMemory</th>
-                  <!-- <th>TotalSwap</th>
-                  <th>UsedSwap</th>
-                  <th>FreeSwap</th>
-                  <th>Userslist</th> -->
-                  <th>DiskFreeSpace</th>
-                  <th>DiskUsedSpace</th>
+                 <% if !@stat.nil? %>
+                   <% @stat.each do |stat|%>
+                      <th> <%= stat %> </th>
+                   <%end%>
+                <%else%>
+                <% if @dashboards.nil? %>
+                <tr> No Data Avilable!! Search to get data..</tr>
+                <% else %>
+                <th>Hostname</th>
+                <th>Ip Address</th>
+                 <th>KernelVersion</th>
+                 <th>Macaddress</th>
+                 <th>Cpuidle</th>
+                 <th>TotalMemory</th>
+                 <th>UsedMemory</th>
+                 <th>FreeMemory</th>
+                 <th>TotalSwap</th>
+                 <th>UsedSwap</th>
+                 <th>FreeSwap</th>
+                 <th>Userslist</th>
+                 <th>DiskFreeSpace</th>
+                 <th>DiskUsedSpace</th>
+                 <th>Cpucount</th>
+                 <th>TopCpuProcess</th>
+                 <th>TopMemoryProcess</th>
+                 <th>CurrentLoggedInUsers</th>
+                 <th>UsersPasswordExpired</th>
+                 <th>PasswordExpireDate</th>
+                  <th>LsOutput</th>
+                  <th>HostsFile</th>
+                  <th>ServicesStatus</th>
+                  <th>Pvs</th>
+                  <th>Vgs</th>
+                  <th>Lvs</th>
+                  <th>DiskUtilization</th>
+                  <th>Ifconfig</th>
+                  <th>PortsListening</th>
+
+                 <%end%>
+
+                 <%end%>
+
                </tr>
              </thead>
              <tbody>
+
+               <% if @dashboards.nil? %>
+
+               <% else %>
                <% @dashboards.each do |ds| %>
                <tr>
+                  <% if !@stat.nil? %>
+                 <% if @stat.include? "Hostname" %>
+                  <td><%= ds.hostname%></td>
+                 <%end%>
+                <% if @stat.include? "Ipaddress" %>
+                  <td><%= ds.ipaddress%></td>
+                <%end%>
+                <% if @stat.include? "KernelVersion" %>
+                  <td><%= ds.kernel_version%></td>
+                <%end%>
+                <% if @stat.include? "Macaddress" %>
+                  <td><%= ds.macaddress%></td>
+                <%end%>
+                <% if @stat.include? "Cpuidle" %>
+                  <td><%= ds.cpuidle%></td>
+                <%end%>
+                <% if @stat.include? "TotalMemory" %>
+                  <td><%= ds.total_memory%></td>
+                <%end%>
+                  <% if @stat.include? "UsedMemory" %>
+                  <td><%= ds.used_memory%></td>
+                <%end%>
+                  <% if @stat.include? "FreeMemory" %>
+                  <td><%= ds.free_memory%></td>
+                  <%end%>
+                  <% if @stat.include? "TotalSwap" %>
+                  <td><%= ds.total_swap%></td>
+                  <%end%>
+                    <% if @stat.include? "UsedSwap" %>
+                  <td><%= ds.used_swap%></td>
+                  <%end%>
+                    <% if @stat.include? "FreeSwap" %>
+                  <td><%= ds.free_swap%></td>
+                  <%end%>
+                    <% if @stat.include? "Userslist" %>
+                  <td><%= ds.userslist%></td>
+                  <%end%>
+                    <% if @stat.include? "DiskFreeSpace" %>
+                  <td><%= ds.disk_free_space%></td>
+                  <%end%>
+                  <% if @stat.include? "DiskUsedSpace" %>
+                  <td><%= ds.disk_Used_space%></td>
+                  <%end%>
+                  <% if @stat.include? "TopCpuProcess" %>
+                  <td><%= ds.top_cpu_process %> </td>
+                  <%end%>
+                  <% if @stat.include? "TopMemoryProcess" %>
+                  <td><%= ds.top_memory_process %> </td>
+                  <%end%>
+
+                    <% if @stat.include? "CurrentLoggedInUsers" %>
+                    <td><%= ds.current_logged_in_users %> </td>
+                    <%end%>
+
+                    <% if @stat.include? "UsersPasswordExpired" %>
+                    <td><%= ds.users_password_expired %> </td>
+                    <%end%>
+
+                    <% if @stat.include? "PasswordExpireDate" %>
+                    <td><%= ds.password_expire_date %> </td>
+                    <%end%>
+
+
+                    <% if @stat.include? "LsOutput" %>
+                    <td><%= ds.ls_output %> </td>
+                    <%end%>
+
+                    <% if @stat.include? "HostsFile" %>
+                    <td><%= ds.hosts_file %> </td>
+                    <%end%>
+
+                    <% if @stat.include? "ServicesStatus" %>
+                    <td><%= ds.services_status %> </td>
+                    <%end%>
+
+                    <% if @stat.include? "Pvs" %>
+                    <td><%= ds.pvs %> </td>
+                    <%end%>
+
+                    <% if @stat.include? "Vgs" %>
+                    <td><%= ds.vgs %> </td>
+                    <%end%>
+
+                    <% if @stat.include? "Lvs" %>
+                    <td><%= ds.lvs %> </td>
+                    <%end%>
+
+                    <% if @stat.include? "DiskUtilization" %>
+                    <td><%= ds.disk_utilization %> </td>
+                    <%end%>
+
+                    <% if @stat.include? "Ifconfig" %>
+                    <td><%= ds.ifconfig %> </td>
+                    <%end%>
+
+                    <% if @stat.include? "PortsListening" %>
+                    <td><%= ds.ports_listening %> </td>
+                    <%end%>
+
+
+
+                  <% else %>
                   <td><%= ds.hostname%></td>
                   <td><%= ds.ipaddress%></td>
                   <td><%= ds.kernel_version%></td>
@@ -78,17 +214,33 @@
                   <td><%= ds.total_memory%></td>
                   <td><%= ds.used_memory%></td>
                   <td><%= ds.free_memory%></td>
-                  <!-- <td><% ds.total_swap%></td>
-                  <td><%ds.used_swap%></td>
-                  <td><% ds.free_swap%></td>
-                  <td><% ds.userslist%></td> -->
+                  <td><%= ds.total_swap%></td>
+                  <td><%= ds.used_swap%></td>
+                  <td><%= ds.free_swap%></td>
+                  <td><%= ds.userslist%></td>
                   <td><%= ds.disk_free_space%></td>
                   <td><%= ds.disk_Used_space%></td>
+                  <td><%= ds.top_cpu_process %> </td>
+                  <td><%= ds.top_memory_process %> </td>
+                  <td><%= ds.current_logged_in_users %> </td>
+                  <td><%= ds.users_password_expired %> </td>
+                  <td><%= ds.password_expire_date %> </td>
 
-
+                  <td><%= ds.ls_output %> </td>
+                  <td><%= ds.hosts_file %> </td>
+                  <td><%= ds.services_status %> </td>
+                  <td><%= ds.pvs %> </td>
+                  <td><%= ds.vgs %> </td>
+                  <td><%= ds.lvs %> </td>
+                  <td><%= ds.disk_utilization %> </td>
+                  <td><%= ds.ifconfig %> </td>
+                  <td><%= ds.ports_listening %> </td>
+                  <%end%>
 
                </tr>
                <%end%>
+               <%end%>
+
              </tbody>
            </table>
 
@@ -96,7 +248,7 @@
        </div>
      </div>
      </div>
-     <div id="footer"></div>
+     <!-- <div id="footer"></div> -->
   </div>
   <script type="text/javascript">
 

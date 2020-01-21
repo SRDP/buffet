@@ -1,19 +1,126 @@
 class DashboardsController < ApplicationController
+  require "json"
   before_action :set_dashboard, only: [:show, :edit, :update, :destroy]
 
   # GET /dashboards
   # GET /dashboards.json
   def index
 
+    @select = Dashboard.new.attributes.keys - ["id","created_at","updated_at"]
+    @select_html =""
+    @select.each do |dsv|
+      @select_html += "<option id="+ "dates-field2" + "class=" + "multiselect-ui form-control" + "multiple=" + "multiple" +  "value=" + dsv + ">" + dsv.camelcase + "</option>"
+     end
     if(params['search'] != "1")
       @dashboards = Dashboard.all
-      @select = @dashboards.last.attributes.keys - ["id","created_at","updated_at"]
-      @group_inv = @dashboards.last.attributes.keys - ["id","created_at","updated_at"]
-    else
 
+    else
+      file = File.open "/Users/sreedeepkumar/Workspace/COE/hackthon/data/data.json"
+      data = JSON.load file
+      data_value_array = data.values
+      data_to_be_saved = []
+
+      data_template = {
+        :hostname => "",
+        :kernel_version => "",
+        :ipaddress => "",
+        :macaddress => "",
+        :cpuidle => "",
+        :total_memory => "",
+        :used_memory => "",
+        :free_memory => "",
+        :total_swap => "",
+        :used_swap => "",
+        :free_swap => "",
+        :userslist => "",
+        :disk_free_space => "",
+        :disk_Used_space => "",
+        :cpucount => "",
+        :top_cpu_process => "",
+        :top_memory_process => "",
+        :current_logged_in_users => "",
+        :users_password_expired => "",
+        :password_expire_date => "",
+
+        :ls_output => "",
+        :hosts_file => "",
+        :services_status => "",
+        :pvs => "",
+        :vgs => "",
+        :lvs => "",
+        :disk_utilization => "",
+        :ifconfig => "",
+        :ports_listening => ""
+
+      }
+
+      data_value_array.each do |d|
+         ul = []
+         data_template[:hostname] = d['hostname']
+         data_template[:kernel_version] = d['kernel_version']
+         data_template[:ipaddress] = d['ipaddress']
+         data_template[:macaddress] = d['macaddress']
+         data_template[:cpuidle] = d['cpuidle']
+         data_template[:total_memory] = d['total_memory']
+         data_template[:used_memory] =  d['used_memory']
+         data_template[:free_memory] =  d['free_memory']
+         data_template[:used_swap] = d['used_swap']
+         data_template[:free_swap] = d['free_swap']
+         data_template[:disk_free_space] = d['disk_free_space']
+         data_template[:disk_Used_space] = d['disk_Used_space']
+         data_template[:cpucount] = d['cpucount']
+
+        data_template[:current_logged_in_users] = d['current_logged_in_users']
+        data_template[:users_password_expired] = d['users_password_expired']
+        data_template[:password_expire_date] = d['password_expire_date']
+        data_template[:ls_output] = d['ls_output']
+        data_template[:hosts_file] = d['hosts_file']
+        data_template[:services_status] = d['services_status']
+        data_template[:pvs] = d['pvs']
+        data_template[:vgs] = d['vgs']
+        data_template[:lvs] = d['lvs']
+        data_template[:disk_utilization] = d['disk_utilization']
+        data_template[:ifconfig] = d['ifconfig']
+        data_template[:ports_listening] = d['ports_listening']
+
+         d['users_list'].split(",").map {|x| ul << x.split('u').compact}
+         data_template[:userslist] = ul.compact.join(",")
+         top_cpu_process = "" + "<br>"
+         top_cpu_process += d['top_cpu_process'].split(",")[0] + "<br>"
+         top_cpu_process += d['top_cpu_process'].split(",")[1] + "<br>"
+         top_cpu_process += d['top_cpu_process'].split(",")[2] + "<br>"
+
+         data_template[:top_cpu_process] = top_cpu_process
+         password_expire_date = ""
+        d['password_expire_date'].split(',').each do | pxd|
+          password_expire_date += pxd  + "<br>"
+        end
+        ls_output =""
+         d['ls_output'].split(',').each do | pxd|
+           ls_output += pxd  + "<br>"
+        end
+        services_status = ""
+        d['services_status'].split(',').each do | pxd|
+          services_status += pxd  + "<br>"
+       end
+       ports_listening =""
+       d['ports_listening'].split(',').each do | pxd|
+         ports_listening += pxd  + "<br>"
+      end
+        data_template[:password_expire_date] = password_expire_date.gsub!("				"," ")
+        data_template[:ls_output] = ls_output.gsub!("				"," ")
+        data_template[:ports_listening] = ports_listening.gsub!("				","")
+        puts ports_listening.inspect
+         data_to_be_saved << data_template
+      end
+Dashboard.create(data_to_be_saved)
+#puts data_template
+
+      puts"-------------------data-----------------------------------"
       hostname = params['hostname'] if !params['hostname'].blank?
       ipaddress = params['ipaddress'] if !params['ipaddress'].blank?
-      stat = params['stat'].split(',') if !params['stat'].blank?
+      @stat = params['stat'] if !params['stat'].blank?
+
       query = ""
       query_data = ""
       query = query + 'hostname ILIKE ?' if !hostname.blank?
@@ -22,8 +129,10 @@ class DashboardsController < ApplicationController
 
 
       @dashboards =   Dashboard.where("hostname ILIKE ?","%#{hostname}%") if !hostname.blank? && ipaddress.blank?
-      @dashboards =   Dashboard.where("ipaddress LIKE ?","%#{ipaddress}%") if hostname.blank? && ipaddress.blank?
-      @dashboards =   Dashboard.where("hostname ILIKE ? and ipaddress LIKE ? ","%#{hostname}%","%#{ipaddress}%") if !hostname.blank? && !ipaddress.blank?
+      @dashboards =   Dashboard.where("ipaddress LIKE ?","%#{ipaddress}%") if hostname.blank? && !ipaddress.blank?
+      @dashboards =   Dashboard.where("hostname ILIKE ? and ipaddress ILIKE ? ","%#{hostname}%","%#{ipaddress}%") if !hostname.blank? && !ipaddress.blank?
+
+      @dashboards
 
 
     end
