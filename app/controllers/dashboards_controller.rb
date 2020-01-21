@@ -17,7 +17,7 @@ class DashboardsController < ApplicationController
      end
     if(params['search'] != "1")
       @dashboards = Dashboard.all
-       @stat = ["Hostname","Ip Address",	"KernelVersion","Macaddress",	"Cpuidle"]
+      @stat = ["Hostname","Ip Address",	"KernelVersion","Macaddress",	"Cpuidle"]
     else
 
 
@@ -144,12 +144,13 @@ class DashboardsController < ApplicationController
       end
       Dashboard.destroy_all
       Dashboard.create(data_to_be_saved)
-#puts data_template
 
-      puts"-------------------data-----------------------------------"
+
+
       hostname = params['hostname'] if !params['hostname'].blank?
       ipaddress = params['ipaddress'] if !params['ipaddress'].blank?
       @stat = params['stat'] if !params['stat'].blank?
+      @stat = ["Hostname","Ip Address","KernelVersion","Macaddress","Cpuidle"] if params['stat'].blank?
 
       query = ""
       query_data = ""
