@@ -104,7 +104,7 @@
              <tbody>
 
                <% if @dashboards.nil? %>
-
+                 <tr> No Data Avilable!! Search to get data..</tr>
                <% else %>
                <% @dashboards.each do |ds| %>
                <tr>
@@ -113,7 +113,7 @@
                   <td><%= ds.hostname.html_safe  if !ds.hostname.nil?%></td>
                  <%end%>
 
-                <% if @stat.include? "Ip Address" %>
+                <% if (@stat.include? "Ip Address") ||  (@stat.include? "Ipaddress")%>
                   <td><%= ds.ipaddress.html_safe  if !ds.ipaddress.nil?%></td>
                 <%end%>
                 <% if @stat.include? "KernelVersion" %>
@@ -337,9 +337,7 @@ body {
    padding:0;
    height:100%;
 }
-.checkbox {
-    margin: 10%;
-}
+
 #container {
    min-height:100%;
    position:relative;
